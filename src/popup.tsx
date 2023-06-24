@@ -1,69 +1,90 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState,useCallback, useEffect } from 'react'
 import './popup.css'
 import { error } from 'console';
+import Notify_module from './notify_module';
+
+export interface notifyProp{
+    id: number,
+    type: string,
+    document:string,
+    icon: string,
+}
+const toastDetails = {
+    timer: 5000,
+    Success:{
+        icon:'fa-circle-check',
+        text:"This is a success toast."
+    },
+    Error:{
+        icon:"fa-circle-xmark",
+        text: "This is an error toast.",
+    },
+    Warning:{
+        icon:"fa-triangle-exclamation",
+        text: "This is a warning toast.",
+    },
+    Info:{
+        icon:"fa-circle-info",
+        text: "This is a information toast.",
+    }
+}
+
 
 const Popup = () => {
-    const notification = useRef<HTMLUListElement>(null);
+    const [notify_list, set_notify_list ] = useState<notifyProp[]>([]);
+    let toastProperties: notifyProp;
 
+    const removeToast = (toast: notifyProp) => {
+        deleteNotify(toast.id);
+    }
+    
+    const deleteNotify = useCallback((id: number) => {
+        const notifyListItem =  notify_list.filter(e => e.id !== id); 
+        console.log(notifyListItem);
+        set_notify_list(notifyListItem);
+    
+    }, [notify_list, set_notify_list]);
 
-    const successBtn = useRef<HTMLDivElement>(null);
-    const errorBtn = useRef<HTMLDivElement>(null);
-    const warningBtn = useRef<HTMLDivElement>(null);
-    const infoBtn = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        console.log("render");
+    }, [notify_list])
+    const createToast = (t: string) => {
+        let icon: string = "";
+        let text: string = "";
+        switch (t){
+            case "Success":
+            case "Error":
+            case "Warning":
+            case "Info":
+                icon = toastDetails[t].icon;
+                text = toastDetails[t].text;
+                break;
+            default:
+                break;
+        };
 
-    const createToast = (r : React.RefObject<HTMLDivElement>) => {
-        const button = r.current;
+        toastProperties = {
+            id: Math.random() * 100,
+            type: t,
+            document: text,
+            icon: icon,
+        }
 
-        console.log(button?.firstElementChild?.id);
+        set_notify_list([...notify_list, toastProperties]);
 
-        const toast1 = React.createElement("li", {
-            className:`toast ${button?.firstElementChild?.id}`,
-            children:
-                `<div className="column">
-                <i className="fa-solid fa-circle-check"></i>
-                <span>Success : This is a success toast.</span>
-                </div>
-                <i className="fa-solid fa-xmark"></i>`
-        })
-        notification.current?.remove( toast1 );
+        setTimeout(() => removeToast(toastProperties), toastDetails.timer)
+
     }
   return (
     <div>
-        <ul ref={notification} className="notifications">
-            <li className="toast success">
-                <div className="column">
-                    <i className="fa-solid fa-circle-check"></i>
-                    <span>Success : This is a success toast.</span>
-                </div>
-                <i className="fa-solid fa-xmark"></i>
-            </li>
-            <li className="toast error">
-                <div className="column">
-                    <i className="fa-solid fa-circle-check"></i>
-                    <span>Error : This is an error toast.</span>
-                </div>
-                <i className="fa-solid fa-xmark"></i>
-            </li>
-            <li className="toast warning">
-                <div className="column">
-                    <i className="fa-solid fa-circle-check"></i>
-                    <span>Warning : This is a warning toast.</span>
-                </div>
-                <i className="fa-solid fa-xmark"></i>
-            </li>
-            <li className="toast info">
-                <div className="column">
-                    <i className="fa-solid fa-circle-check"></i>
-                    <span>Info : This is a information toast.</span>
-                </div>
-                <i className="fa-solid fa-xmark"></i>
-            </li>
+        <ul className="notifications">
+            <Notify_module notifyList={notify_list} deleteNotify={deleteNotify}/>
         </ul>
         <div className="buttons">
-            <div onClick = {() => (createToast(successBtn))} ref={successBtn}><button className="btn" id="success">Success</button></div>
-            <div onClick = {() => (createToast(errorBtn))} ref={errorBtn}><button className="btn" id="error">Error</button></div>
-            <div onClick = {() => (createToast(warningBtn))} ref={warningBtn}><button className="btn" id="warning">Warning</button></div>
-            <div onClick = {() => (createToast(infoBtn))} ref={infoBtn}><button className="btn" id="info">Info</button></div>
+            <button onClick={() => (createToast("Success"))}  className="btn" id="success">Success</button>
+            <button onClick={() => (createToast("Error", ))}    className="btn" id="error">Error</button>
+            <button onClick={() => (createToast("Warning", ))}  className="btn" id="warning">Warning</button>
+            <button onClick={() => (createToast("Info", ))}     className="btn" id="info">Info</button>
         </div>
     </div>
   )
