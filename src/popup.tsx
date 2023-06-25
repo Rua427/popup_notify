@@ -1,7 +1,8 @@
 import React, { useRef, useState,useCallback, useEffect } from 'react'
 import './popup.css'
-import { error } from 'console';
 import Notify_module from './notify_module';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export interface notifyProp{
     id: number,
@@ -45,9 +46,6 @@ const Popup = () => {
     
     }, [notify_list, set_notify_list]);
 
-    useEffect(() => {
-        console.log("render");
-    }, [notify_list])
     const createToast = (t: string) => {
         let icon: string = "";
         let text: string = "";
@@ -71,23 +69,84 @@ const Popup = () => {
         }
 
         set_notify_list([...notify_list, toastProperties]);
-        const wait = (toastDetails.timer) => new Promise((removeToast) =>setTimeout(() => removeToast(toastProperties, toastDetails.timer)))
         setTimeout(() => removeToast(toastProperties), toastDetails.timer)
 
     }
-  return (
-    <div>
-        <ul className="notifications">
-            <Notify_module notifyList={notify_list} deleteNotify={deleteNotify}/>
-        </ul>
-        <div className="buttons">
-            <button onClick={() => (createToast("Success"))}  className="btn" id="success">Success</button>
-            <button onClick={() => (createToast("Error", ))}    className="btn" id="error">Error</button>
-            <button onClick={() => (createToast("Warning", ))}  className="btn" id="warning">Warning</button>
-            <button onClick={() => (createToast("Info", ))}     className="btn" id="info">Info</button>
+
+    const successToast = () => {
+        toast.success(toastDetails.Success.text, {
+            position: "top-right",
+            autoClose: toastDetails.timer,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    }
+    const errorToast = () => {
+        toast.error(toastDetails.Error.text, {
+            position: "top-right",
+            autoClose: toastDetails.timer,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    }
+    const warningToast = () => {
+        toast.warning(toastDetails.Warning.text, {
+            position: "top-right",
+            autoClose: toastDetails.timer,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    }
+    const infoToast = () => {
+        toast.info(toastDetails.Info.text, {
+            position: "top-right",
+            autoClose: toastDetails.timer,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    }
+    return (
+        <div>
+            <ul className="notifications">
+                <Notify_module notifyList={notify_list} deleteNotify={deleteNotify}/>
+            </ul>
+            <div className="buttons">
+                <button onClick={successToast}  className="btn" id="success">Success</button>
+                <button onClick={errorToast}    className="btn" id="error">Error</button>
+                <button onClick={warningToast}  className="btn" id="warning">Warning</button>
+                <button onClick={infoToast}     className="btn" id="info">Info</button>
+
+                <ToastContainer
+                    position="top-right"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={true}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss={false}
+                    draggable
+                    pauseOnHover
+                    theme="light"
+                />
+            </div>
         </div>
-    </div>
-  )
+    )
 }
 
 export default Popup
