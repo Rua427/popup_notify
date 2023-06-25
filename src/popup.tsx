@@ -71,7 +71,7 @@ const Popup = () => {
         }
 
         set_notify_list([...notify_list, toastProperties]);
-
+        const wait = (toastDetails.timer) => new Promise((removeToast) =>setTimeout(() => removeToast(toastProperties, toastDetails.timer)))
         setTimeout(() => removeToast(toastProperties), toastDetails.timer)
 
     }
